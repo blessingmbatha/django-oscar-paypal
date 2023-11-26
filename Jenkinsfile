@@ -17,5 +17,15 @@ pipeline {
                 sh "pip install -r requirements.txt"
              }
          }
+         stage('Run Tests') {
+             steps {
+                sh 'python3 -m unittest discover'
+             }
+         }
+         stage('Build') {
+             steps {
+                sh 'python3 setup.py build'
+             }
+         }
     }
 }
