@@ -45,5 +45,11 @@ pipeline {
                 }
             } 
         }
+        stage("OWASP Dependency Check"){
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DC'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            } 
+        }
     }
 }
