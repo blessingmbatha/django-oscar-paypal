@@ -30,5 +30,26 @@ pipeline {
                 sh 'python3 setup.py build'
              }
          }
+         stage("Sonarqube Analysis "){
+             steps{
+                withSonarQubeEnv('sonar-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Ecommerce-Python \
+                    -Dsonar.projectKey=Ecommerce-Python '''
+                }
+            }
+         }
+         stage("quality gate"){
+             steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token' 
+                }
+             } 
+          }
+          stage("OWASP Dependency Check"){
+              steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DC'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+              }
+          }
     }
 }
